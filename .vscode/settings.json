@@ -1,0 +1,16 @@
+{
+    "cSpell.words": [
+        "ccthomas"
+    ],
+    "[python]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4
+    },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "eslint.workingDirectories": [
+        "virtual-gamers-react-app",
+        "virtual-gamers-service"
+    ]
+}
