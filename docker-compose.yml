@@ -13,26 +13,46 @@ services:
     networks:
       - my_network
 
-  service:
-    container_name: virtual-gamers-service
+  ruby-service:
+    container_name: virtual-gamers-ruby-service
     build:
-      context: ./virtual-gamers-service
+      context: ./virtual-gamers-ruby-service
       dockerfile: Dockerfile
     ports:
-      - ${SERVICE_PORT}:${SERVICE_PORT}
+      - ${RUBY_SERVICE_PORT}:${RUBY_SERVICE_PORT}
     depends_on:
       - postgres-db
     networks:
       - my_network
     environment:
-      PORT: ${SERVICE_PORT}
+      PORT: ${RUBY_SERVICE_PORT}
+      REACT_APP_URL: ${REACT_APP_URL}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT_INTERNAL}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+  nodejs-service:
+    container_name: virtual-gamers-nodejs-service
+    build:
+      context: ./virtual-gamers-nodejs-service
+      dockerfile: Dockerfile
+    ports:
+      - ${NODEJS_SERVICE_PORT}:${NODEJS_SERVICE_PORT}
+    depends_on:
+      - postgres-db
+    networks:
+      - my_network
+    environment:
+      PORT: ${NODEJS_SERVICE_PORT}
       REACT_APP_PORT: ${REACT_APP_PORT}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT_INTERNAL}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      NODE_ENV: development  # Set environment variables if needed
+      NODE_ENV: development # Set environment variables if needed
 
   react-app:
     container_name: virtual-gamers-react-app
@@ -40,13 +60,15 @@ services:
       context: ./virtual-gamers-react-app
       args:
         REACT_APP_PORT: ${REACT_APP_PORT}
-        REACT_APP_SERVICE_API: ${SERVICE_API}
+        REACT_APP_SERVICE_API: ${NODEJS_SERVICE_API}
+        REACT_APP_RUBY_SERVICE_API: ${RUBY_SERVICE_API}
     ports:
       - ${REACT_APP_PORT}:${REACT_APP_PORT}
     environment:
       NODE_ENV: production
     depends_on:
-      - service
+      - ruby-service
+      - nodejs-service
 
 networks:
   my_network:

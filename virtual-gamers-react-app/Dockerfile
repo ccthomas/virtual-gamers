@@ -1,17 +1,24 @@
 # Use the official Node.js image as the base image
-FROM node:18-alpine
+FROM node:20-alpine
 
 # Define build arguments
 ARG REACT_APP_PORT
 ARG REACT_APP_SERVICE_API
+ARG REACT_APP_RUBY_SERVICE_API
 
 # Set environment variable (optional, can be used within Dockerfile)
 ENV REACT_APP_PORT=${REACT_APP_PORT}
+
 ENV REACT_APP_SERVICE_API=${REACT_APP_SERVICE_API}
+
+ENV REACT_APP_RUBY_SERVICE_API=${REACT_APP_RUBY_SERVICE_API}
 
 # Print environment variables (for debugging)
 RUN echo "REACT_APP_PORT: ${REACT_APP_PORT}"
+
 RUN echo "REACT_APP_SERVICE_API: ${REACT_APP_SERVICE_API}"
+
+RUN echo "REACT_APP_RUBY_SERVICE_API: ${REACT_APP_RUBY_SERVICE_API}"
 
 # Set the working directory in the container
 WORKDIR /app

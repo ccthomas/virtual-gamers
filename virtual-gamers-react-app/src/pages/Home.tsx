@@ -30,23 +30,47 @@ const ErrorContainer = styled(Container)(() => ({
 }));
 
 const HomePage = () => {
-  const [status, setStatus] = useState<{ Service: string; PostgresSql: string } | null>(null);
+  const [healthStatus, setHealthStatus] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch health status from your backend
-    console.log('process.env.REACT_APP_SERVICE_API: ', process.env.REACT_APP_SERVICE_API);
-    axios.get(`${process.env.REACT_APP_SERVICE_API}/health`) // Adjust the endpoint as needed
-      .then((response) => {
-        setStatus(response.data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to fetch health status');
-        setLoading(false);
+    const getHealth = async () => {
+      // Fetch health status from your backend
+      const nodeJs = await axios.get(`${process.env.REACT_APP_SERVICE_API}/health`) // Adjust the endpoint as needed
+        .then((r) => r.data)
+        .catch(() => {
+          setError('Failed to fetch health status');
+          setLoading(false);
+        });
+
+      const ruby = await axios.get(`${process.env.REACT_APP_RUBY_SERVICE_API}/up`) // Adjust the endpoint as needed
+        .then((r) => r.data)
+        .catch(() => {
+          setError('Failed to fetch health status');
+          setLoading(false);
+        });
+
+      console.log({
+        'NodeJs Server': nodeJs.Service,
+        'NodeJs PostgreSQL': nodeJs.PostgresSql,
+        'Ruby Server': ruby.Service,
+        'Ruby PostgreSQL': ruby.PostgresSql,
       });
+      setHealthStatus({
+        'NodeJs Server': nodeJs.Service,
+        'NodeJs PostgreSQL': nodeJs.PostgresSql,
+        'Ruby Server': ruby.Service,
+        'Ruby PostgreSQL': ruby.PostgresSql,
+      });
+      setLoading(false);
+    };
+
+    setLoading(true);
+    getHealth();
   }, []);
+
+  console.log(healthStatus);
 
   if (loading) {
     return (
@@ -85,22 +109,16 @@ const HomePage = () => {
         </Typography>
       </Box>
       <Grid container spacing={4}>
-        <Grid item xs={12} sm={6}>
-          <StatusCard>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>Service Status</Typography>
-              <Typography variant="body1" color="textPrimary">{status?.Service || 'Unknown'}</Typography>
-            </CardContent>
-          </StatusCard>
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <StatusCard>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>PostgreSQL Version</Typography>
-              <Typography variant="body1" color="textPrimary">{status?.PostgresSql || 'Unknown'}</Typography>
-            </CardContent>
-          </StatusCard>
-        </Grid>
+        {Object.keys(healthStatus).map((key: string) => (
+          <Grid item xs={12} sm={6}>
+            <StatusCard>
+              <CardContent>
+                <Typography variant="h6" gutterBottom>{key}</Typography>
+                <Typography variant="body1" color="textPrimary">{healthStatus[key] || 'Unknown'}</Typography>
+              </CardContent>
+            </StatusCard>
+          </Grid>
+        ))}
       </Grid>
     </Container>
   );
