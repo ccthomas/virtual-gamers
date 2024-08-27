@@ -7,6 +7,7 @@ Virtual Gamers is a platform where users can browse and play a variety of games,
 1. Install [Docker](https://www.docker.com)
 2. Run command `docker-compose up -d`
     1. Optional Update `.env` file to modify ports, if the common dev ports are already in use.
+3. Rebuild a container if needed `docker compose --env-file .env up -d --no-deps --build <service-name>`
 
 ## High Level Technical Design
 

@@ -7,7 +7,16 @@ export const createApiErrorMiddleware = (
 ) => async (err: Error, _req: Request, res: Response): Promise<void> => {
   logger.error({ err }, 'API Error Middleware hit.');
 
+  if (err.message === 'Unauthorized') {
+    res.header('Content-Type', 'application/json');
+    res.status(401).json({
+      message: 'Unauthorized',
+    });
+    return;
+  }
+
   // Respond with a generic error message
+  res.header('Content-Type', 'application/json');
   res.status(500).json({
     message: 'An unexpected error occurred.',
     // Optionally include the error message for development (not recommended for production)
