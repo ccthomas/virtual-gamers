@@ -1,19 +1,16 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Home from './pages/Home';
-
-const routes: { path: string; element: JSX.Element, isPrivate?: boolean | undefined }[] = [
-  {
-    path: '/',
-    element: <Home />,
-  },
-];
+import routeConfigs from './RoutesConfig';
+import PrivateRoute from './components/PrivateRoute';
 
 const App = () => (
   <Router>
     <Routes>
-      {routes.map(((route) => (
-        <Route key={route.path} path={route.path} element={route.element} />
+      {Object.values(routeConfigs).map(((route) => (
+        <Route key={route.path} path={route.path} element={
+          route.isPrivate === true
+            ? (<PrivateRoute>{route.element}</PrivateRoute>) : route.element
+        } />
       )))}
     </Routes>
   </Router>

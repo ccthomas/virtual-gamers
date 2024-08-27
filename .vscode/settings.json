@@ -11,6 +11,6 @@
     "editor.formatOnSave": true,
     "eslint.workingDirectories": [
         "virtual-gamers-react-app",
-        "virtual-gamers-service"
+        "virtual-gamers-nodejs-service"
     ]
 }

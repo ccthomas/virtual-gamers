@@ -1,0 +1,2 @@
+export const NODE_JS_SERVICE_API = process.env.REACT_APP_NODEJS_SERVICE_API;
+export const RUBY_SERVICE_API = process.env.REACT_APP_RUBY_SERVICE_API;
