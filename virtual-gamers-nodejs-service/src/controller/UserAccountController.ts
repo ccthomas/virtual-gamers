@@ -51,6 +51,7 @@ export class UserAccountControllerImpl implements IUserAccountController {
       const userId = payload.id;
       await this.userAccountService.getUserAccount(userId)
         .then((userAccount: IUserAccount) => {
+          res.header('Content-Type', 'application/json');
           res.status(200).json(userAccount);
         });
     } catch (e) { next(e); }

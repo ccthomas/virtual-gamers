@@ -22,3 +22,14 @@ Virtual Gamers is a platform where users can browse and play a variety of games,
     1. NodeJs v20 w/ TypeScript v5.
     1. The React App is the UI portion of the application.
     1. Future Plans: After initial product is delivered. The app will be structured to handle MicroFront Ends.
+
+### React App
+
+Routes on the app are reserved for specfic purposes, as to not overlap with the different games.
+The following are the rserved routes and their purpose.
+* `/user` Management of users & their sessions.
+* `/admin` Used for all configurations and health checks.
+* `/games` Game Mangement and browsing of game catalog.
+
+Each game will get it's own base routes, like `/games/dungeon-duel`, upon it's creation.
+All sub-routes will be owned by the games base route.
