@@ -1,4 +1,7 @@
+# app/controllers/health_controller.rb
 class HealthController < ApplicationController
+  include JwtAuthenticable
+
   # GET /up
   def index
     begin

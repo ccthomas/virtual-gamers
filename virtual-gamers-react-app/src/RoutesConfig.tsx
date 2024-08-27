@@ -1,11 +1,12 @@
 import HealthPage from './pages/Health';
 import Home from './pages/Home';
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
+import SignInUp from './pages/SignInUp';
+import UnauthorizedPage from './pages/Unauthorized';
 
 export type RouteConfig = {
   path: string;
   element: JSX.Element;
+  isPrivate?: boolean;
 };
 
 const routeConfigs: Record<string, RouteConfig> = {
@@ -14,19 +15,24 @@ const routeConfigs: Record<string, RouteConfig> = {
     path: '/',
     element: <Home />,
   },
+  unauthorized: {
+    path: '/unauthorized',
+    element: <UnauthorizedPage />,
+  },
   // Admin
   health: {
     path: '/admin/health',
     element: <HealthPage />,
+    isPrivate: true,
   },
   // User Routes
   signIn: {
     path: '/user/signin',
-    element: <SignIn />,
+    element: <SignInUp authType='SIGN_IN' />,
   },
   signUp: {
     path: '/user/signup',
-    element: <SignUp />,
+    element: <SignInUp authType='SIGN_UP' />,
   },
 };
 

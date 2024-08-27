@@ -5,9 +5,19 @@ Virtual Gamers is a platform where users can browse and play a variety of games,
 ## Getting Started
 
 1. Install [Docker](https://www.docker.com)
-2. Run command `docker-compose up -d`
-    1. Optional Update `.env` file to modify ports, if the common dev ports are already in use.
-3. Rebuild a container if needed `docker compose --env-file .env up -d --no-deps --build <service-name>`
+2. Pre-configute environment. If other local development is occuring, update `.env` with avaialbe ports on system.
+3. Start core infrasturcture.
+    1. Run docker command: `docker-compose up postgres -d`
+    1. Run docker command: `docker-compose up localstack -d`
+4. Configure core infrasturcture.
+    1. Connect to DB and run sql scripts in `/database` folder.
+        1. TODO - Comne up wit single docker command to run init scripts.
+    2. Apply terraform to localstack.
+        1. Run terraform command: `docker run -i -t hashicorp/terraform:latest -chdir=terraform init `
+        2. Run terraform command: `docker run -i -t hashicorp/terraform:latest plan`
+        3. Run terraform command: `docker run -i -t hashicorp/terraform:latest apply --auto-approve`
+    
+If you need to rebuild a container: `docker compose --env-file .env up -d --no-deps --build <service-name>`
 
 ## High Level Technical Design
 
