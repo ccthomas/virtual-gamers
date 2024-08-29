@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  # Other routes
+  mount Sidekiq::Web => '/sidekiq'
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -20,5 +23,11 @@ Rails.application.routes.draw do
 
     get 'management/athletes/load/:team_id', to: 'management/athletes#load'
   end
+  # Define the route for triggering the HardJob
+  post 'jobs/hard_job', to: 'jobs#create'
+  post 'jobs/load', to: 'jobs#load'
 
 end
+
+
+# curl -X POST http://localhost:3032/jobs/hard_job -d "name=bob&count=5" -H "Content-Type: application/x-www-form-urlencoded"
