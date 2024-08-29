@@ -1,0 +1,8 @@
+# React-specific ignores
+build/
+*.log
+*.env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.cache/

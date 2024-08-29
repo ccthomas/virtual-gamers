@@ -1,0 +1,13 @@
+# Ruby-specific ignores
+*.gem
+*.rbc
+.bundle
+config/credentials.yml.enc
+coverage/
+log/
+tmp/
+.byebug_history
+db/*.sqlite3
+db/*.sqlite3-journal
+public/system/
+node_modules/

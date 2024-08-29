@@ -13,6 +13,14 @@ services:
     networks:
       - my_network
 
+  redis:
+    container_name: virtual-gamers-redis
+    image: redis
+    networks:
+      - my_network
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+
   ruby-service:
     container_name: virtual-gamers-ruby-service
     build:
@@ -32,6 +40,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_URL: ${REDIS_URL}
 
   nodejs-service:
     container_name: virtual-gamers-nodejs-service
