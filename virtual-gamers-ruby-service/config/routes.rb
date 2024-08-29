@@ -7,4 +7,18 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  # 
+  namespace :college_football do
+    # New endpoint to get all athletes
+    get 'athletes', to: 'athletes#index'
+  
+    # New endpoint to get all teams
+    get 'teams', to: 'teams#index'
+    
+    # Moved load endpoint under college_football namespace
+    get 'management/teams/load', to: 'management/teams#load'
+
+    get 'management/athletes/load/:team_id', to: 'management/athletes#load'
+  end
+
 end
