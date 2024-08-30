@@ -1,5 +1,6 @@
 # React-specific ignores
 build/
+node_modules/
 *.log
 *.env
 npm-debug.log*

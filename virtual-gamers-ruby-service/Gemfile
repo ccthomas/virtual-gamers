@@ -45,3 +45,5 @@ end
 
 
 gem "sidekiq", "~> 7.3"
+
+gem 'kaminari', '~> 1.2', '>= 1.2.2'

@@ -7,4 +7,7 @@ class AthleteRecord < ApplicationRecord
 
   # Validations (adjust as needed)
   validates :id, presence: true, uniqueness: true
+
+  # Add pagination support
+  paginates_per 10
 end

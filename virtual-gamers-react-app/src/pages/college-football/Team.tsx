@@ -1,83 +1,67 @@
 // src/components/TeamsPage.tsx
 
-import React, { useEffect, useState } from 'react';
-import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
+import React, { useState, useEffect } from 'react';
 import {
-  Container, Typography, Box, TextField,
-  Paper, Button,
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
+  Paper, CircularProgress, Typography, TablePagination, TextField, Button,
+  Box, Container, TableFooter,
 } from '@mui/material';
-import DynamicAppBar from '../../components/DynamicAppBar';
-import { Team } from '../../types/Team';
-import { apiGet } from '../../utils/apiUtil';
-import { RUBY_SERVICE_API } from '../../constants';
 import routeConfigs from '../../RoutesConfig';
+import { Team } from '../../types/Team';
+import DynamicAppBar from '../../components/DynamicAppBar';
+import { useTeamContext } from '../../contexts/TeamContext';
 
 const TeamsPage: React.FC = () => {
-  const [teams, setTeams] = useState<Team[]>([]);
+  const { teams, loading, error } = useTeamContext();
   const [filteredTeams, setFilteredTeams] = useState<Team[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
-
-  useEffect(() => {
-    const fetchTeams = async () => {
-      try {
-        const response = await apiGet(`${RUBY_SERVICE_API}/college_football/teams`);
-        setTeams(response.data.data);
-        setFilteredTeams(response.data.data); // Set initial filtered teams
-      } catch (error) {
-        console.error('Error fetching teams data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTeams();
-  }, []);
+  const [page, setPage] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<'abbreviation' | 'display_name' | 'location'>('abbreviation');
 
   useEffect(() => {
     const lowercasedQuery = searchQuery.toLowerCase();
-    const filtered = teams
-      .filter((team) => team.abbreviation.toLowerCase().includes(lowercasedQuery)
-        || team.display_name.toLowerCase().includes(lowercasedQuery)
-        || team.location.toLowerCase().includes(lowercasedQuery));
-    setFilteredTeams(filtered);
-  }, [searchQuery, teams]);
+    const filtered = teams.filter((team: Team) => team.abbreviation
+      .toLowerCase().includes(lowercasedQuery)
+      || team.display_name.toLowerCase().includes(lowercasedQuery)
+      || team.location.toLowerCase().includes(lowercasedQuery));
 
-  const columns: GridColDef[] = [
-    {
-      field: 'logo',
-      headerName: 'Logo',
-      width: 150,
-      renderCell: (params) => (
-        <img src={params.value} alt="Team Logo" style={{ width: 50, height: 50 }} />
-      ),
-    },
-    { field: 'abbreviation', headerName: 'Abbreviation', width: 150 },
-    { field: 'display_name', headerName: 'Display Name', width: 200 },
-    { field: 'location', headerName: 'Location', width: 200 },
-    {
-      field: 'roster',
-      headerName: 'Roster',
-      width: 150,
-      renderCell: (params) => (
-        <Button
-          variant="contained"
-          color="primary"
-          href={`${routeConfigs.collegeFootballAthletes.path}?team_id=${params.row.id}`}
-        >
-          View Roster
-        </Button>
-      ),
-    },
-  ];
+    // Sorting
+    const sorted = filtered.sort((a: Team, b: Team) => {
+      const aValue = a[sortBy].toLowerCase();
+      const bValue = b[sortBy].toLowerCase();
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
 
-  const rows: GridRowsProp = filteredTeams.map((team) => ({
-    id: team.id,
-    logo: team.logos[0]?.href || '', // Assuming the first logo is used
-    abbreviation: team.abbreviation,
-    display_name: team.display_name,
-    location: team.location,
-  }));
+    setFilteredTeams(sorted);
+    setTotalCount(sorted.length);
+  }, [searchQuery, teams, sortBy, sortDirection]);
+
+  const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    setPageSize(parseInt(event.target.value, 10));
+    setPage(0); // Reset to first page
+  };
+
+  const handleSort = (field: 'abbreviation' | 'display_name' | 'location') => {
+    const isAsc = sortBy === field && sortDirection === 'asc';
+    setSortDirection(isAsc ? 'desc' : 'asc');
+    setSortBy(field);
+  };
+
+  const rows = filteredTeams.slice(page * pageSize, page * pageSize + pageSize);
+
+  if (loading) return <CircularProgress />;
+  if (error) return <Typography color="error">{error}</Typography>;
 
   return (
     <>
@@ -92,7 +76,6 @@ const TeamsPage: React.FC = () => {
             label: 'Teams',
             route: routeConfigs.collegeFootballTeams.path,
           },
-
           {
             label: 'Athletes',
             route: routeConfigs.collegeFootballAthletes.path,
@@ -100,15 +83,18 @@ const TeamsPage: React.FC = () => {
         ]}
       />
       <Container
-        maxWidth="xs"
+        maxWidth={false}
         sx={{
-          height: '90vh',
+          width: '70%', // Adjust width as needed (60-70%)
+          margin: 'auto',
+          height: '80vh', // Adjust height to fit within the viewport
           display: 'flex',
-          alignItems: 'center',
+          flexDirection: 'column',
           justifyContent: 'center',
           padding: 3,
-        }}>
-        <Paper>
+        }}
+      >
+        <Paper sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
           <Typography variant="h4" gutterBottom>
             Teams
           </Typography>
@@ -122,12 +108,75 @@ const TeamsPage: React.FC = () => {
               placeholder="Search by Abbreviation, Display Name, or Location"
             />
           </Box>
-          <Box sx={{ height: 500, width: '100%' }}>
-            <DataGrid
-              rows={rows}
-              columns={columns}
-              loading={loading}
-            />
+          <Box sx={{ flexGrow: 1, overflow: 'auto' }}>
+            <TableContainer>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Logo</TableCell>
+                    <TableCell
+                      sortDirection={sortBy === 'abbreviation' ? sortDirection : false}
+                      onClick={() => handleSort('abbreviation')}
+                    >
+                      Abbreviation
+                    </TableCell>
+                    <TableCell
+                      sortDirection={sortBy === 'display_name' ? sortDirection : false}
+                      onClick={() => handleSort('display_name')}
+                    >
+                      Display Name
+                    </TableCell>
+                    <TableCell
+                      sortDirection={sortBy === 'location' ? sortDirection : false}
+                      onClick={() => handleSort('location')}
+                    >
+                      Location
+                    </TableCell>
+                    <TableCell>Roster</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((team) => (
+                    <TableRow key={team.id}>
+                      <TableCell>
+                        <img src={team.logos[0]?.href || ''} alt="Team Logo" style={{ width: 50, height: 50 }} />
+                      </TableCell>
+                      <TableCell>{team.abbreviation}</TableCell>
+                      <TableCell>{team.display_name}</TableCell>
+                      <TableCell>{team.location}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          href={`${routeConfigs.collegeFootballAthletes.path}?team_id=${team.id}`}
+                        >
+                          View Roster
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+                <TableFooter>
+                  <TableRow>
+                    <TablePagination
+                      rowsPerPageOptions={[10, 25, 50]}
+                      component="td"
+                      count={totalCount}
+                      rowsPerPage={pageSize}
+                      page={page}
+                      onPageChange={handlePageChange}
+                      onRowsPerPageChange={handleRowsPerPageChange}
+                      sx={{
+                        position: 'sticky',
+                        bottom: 0,
+                        backgroundColor: 'white',
+                        zIndex: 1,
+                      }}
+                    />
+                  </TableRow>
+                </TableFooter>
+              </Table>
+            </TableContainer>
           </Box>
         </Paper>
       </Container>
