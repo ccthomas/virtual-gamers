@@ -1,0 +1,10 @@
+# Node.js-specific ignores
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnp/
+.pnp.js
+.coverage/
+dist/
+*.log

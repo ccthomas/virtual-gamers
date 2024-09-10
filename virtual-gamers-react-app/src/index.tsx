@@ -9,6 +9,7 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { AuthProvider } from './contexts/AuthContext';
+import { TeamProvider } from './contexts/TeamContext';
 
 const theme = createTheme({
   palette: {
@@ -28,7 +29,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <ThemeProvider theme={theme}>
     <AuthProvider>
-      <App />
+      <TeamProvider>
+        <App />
+      </TeamProvider>
     </AuthProvider>
   </ThemeProvider>,
 );

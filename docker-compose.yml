@@ -13,6 +13,27 @@ services:
     networks:
       - my_network
 
+  sidekiq:
+    container_name: virtual-gamers-sidekiq
+    build:
+      context: ./virtual-gamers-ruby-service
+      dockerfile: Dockerfile
+    command: bundle exec sidekiq
+    depends_on:
+      - redis
+    networks:
+      - my_network
+    environment:
+      REDIS_URL: ${REDIS_URL}
+
+  redis:
+    container_name: virtual-gamers-redis
+    image: redis
+    networks:
+      - my_network
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+
   ruby-service:
     container_name: virtual-gamers-ruby-service
     build:
@@ -32,6 +53,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_URL: ${REDIS_URL}
 
   nodejs-service:
     container_name: virtual-gamers-nodejs-service

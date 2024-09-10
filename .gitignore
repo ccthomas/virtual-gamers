@@ -1,8 +1,8 @@
-# Node modules
-**/node_modules/
-
-# macOS
-.DS_Store
-
-# Windows
-Thumbs.db
+# Global ignores
+*.log
+*.tmp
+*.swp
+*.DS_Store
+*.env
+*.idea
+*.vscode
