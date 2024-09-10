@@ -2,8 +2,8 @@ module CollegeFootball
   module Management
     class TeamsController < ApplicationController
       def load
-        TeamDataFetcher.fetch_and_store_teams
-        render json: { message: 'Teams data fetched and stored successfully' }, status: :ok
+        FetchTeamsJob.perform_later
+        render json: { message: 'Teams data fetching job scheduled.' }, status: :ok
       end
     end
   end
